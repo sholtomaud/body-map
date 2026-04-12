@@ -53,10 +53,9 @@ These agents enforce the "Microsoft-style" strict workflow and TDD requirements.
     6.  **Result:** If exit code !== 0, abort commit.
 
 ### 2.2 The Test Agent (Playwright)
-*   **Trigger:** Pre-commit hook, CI/CD pipeline, or `npm test`.
+*   **Trigger:** on push to github, Github Actions CI/CD pipeline, or `npm test`.
 *   **Role:** Verification of User Experience and Accessibility.
 *   **Modes:**
-    *   **UI Mode:** Interactive debugging of components.
     *   **Headless Mode:** Automated regression testing.
 *   **Scope:**
     *   Validates Shadow DOM rendering.
