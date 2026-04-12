@@ -52,16 +52,6 @@ These agents enforce the "Microsoft-style" strict workflow and TDD requirements.
     5.  Run **The Test Agent**.
     6.  **Result:** If exit code !== 0, abort commit.
 
-### 2.2 The Test Agent (Playwright)
-*   **Trigger:** on push to github, Github Actions CI/CD pipeline, or `npm test`.
-*   **Role:** Verification of User Experience and Accessibility.
-*   **Modes:**
-    *   **Headless Mode:** Automated regression testing.
-*   **Scope:**
-    *   Validates Shadow DOM rendering.
-    *   Checks ARIA roles and accessibility trees.
-    *   Validates Dark/Light mode contrast.
-
 ### 2.3 The Build Agent (Vite)
 *   **Trigger:** `npm run build`.
 *   **Role:** Optimizer and Bundler.
@@ -95,7 +85,7 @@ self.postMessage({
 ```
 
 ## 4. Development Workflow (TDD Loop)
-1. Red: Write a failing Playwright test defining the component's behavior.
+
 2. Commit Blocked: The Pre-Commit Agent blocks the commit.
 3. Green: Create the .ts, .html, and .css files. Implement the minimum code to pass the test.
 4. Refactor: Optimize the WASM logic or CSS variables without breaking tests.
