@@ -12,7 +12,7 @@ concerns.
 - **No Runtime Libraries**: All UI logic is native Custom Elements.
 - **Test-Driven Development (TDD)**: Code is not committed unless tests pass.
 - **Native Performance**: Leveraging WebAssembly for logic and WebGPU for graphics, offloaded to Web Workers.
-- **Stability for Automation**: DOM structures are preserved during updates to prevent Playwright/LLM-Agent "flaky test" loops.
+- **Stability for Automation**: DOM structures are preserved during updates to prevent LLM-Agent "flaky test" loops.
 - **Agent-Safe Contracts**: All lifecycle hooks, readiness signals, and test entry points are enforced conventions, not suggestions.
 
 ---
@@ -29,7 +29,7 @@ concerns.
 | Parallelism | Web Workers | Non-blocking main thread execution. |
 | Graphics | WebGPU | High-performance rendering (if applicable). |
 | Linting | ESLint + Prettier | Code consistency. |
-| Testing | Playwright CT (Vite) | Component-level integration tests. |
+| Testing | Vite | Component-level integration tests. |
 | Git Hooks | husky + lint-staged | Pre-commit quality gates. |
 
 ---
@@ -59,7 +59,7 @@ prevent LLM Agent test loops:
 1. **Non-Destructive Rendering** — the Shadow DOM is only written once; subsequent updates
    target specific nodes via `updateUI()`.
 2. **Event-Guard** — `attachEvents()` is protected by a boolean flag to prevent duplicate
-   listeners on remount (which Playwright Component Testing triggers on every `mount()` call).
+   listeners on remount.
 
 ```typescript
 // my-component.ts
@@ -84,7 +84,7 @@ export class MyComponent extends HTMLElement {
   connectedCallback() {
     this.render();
 
-    // Guard is mandatory — Playwright CT calls connectedCallback on every mount()
+    // Guard is mandatory
     if (!this._eventsAttached) {
       this.attachEvents();
       this._eventsAttached = true;
@@ -105,7 +105,6 @@ export class MyComponent extends HTMLElement {
 
   private render() {
     // ── Non-Destructive: write the DOM exactly once ────────────────────────
-    // Prevents Playwright from losing stale element handles between assertions
     if (!this.shadowRoot!.innerHTML) {
       this.shadowRoot!.innerHTML = templateHtml;
       const sheet = new CSSStyleSheet();
@@ -135,7 +134,7 @@ Every component **must** set `this.dataset.ready = 'true'` as the final statemen
 initialisation path. For synchronous components this happens at the end of `connectedCallback`.
 For components that initialise a Worker or WASM module, it happens inside the resolved promise.
 
-This attribute is the **only** synchronisation primitive that Playwright tests and LLM Agents
+This attribute is the **only** synchronisation primitive tha LLM Agents
 should rely on. Tests must not assert on component internals until this attribute is present.
 
 ```typescript
@@ -191,7 +190,7 @@ The application uses a **Main Thread + Background Agents** model.
 
 - **UI Agent (Main Thread):** Hosts Web Components, handles DOM and user input.
 - **Compute Agent (Web Worker):** Loads WASM modules for heavy calculations. Posts messages back to the component via a typed `MessageChannel`.
-- **Lifecycle Signalling:** Components must only set `this.dataset.ready = 'true'` _after_ their Worker or WASM module has confirmed readiness via a `{ type: 'ready' }` message. This prevents Playwright from asserting on uninitialised state.
+- **Lifecycle Signalling:** Components must only set `this.dataset.ready = 'true'` _after_ their Worker or WASM module has confirmed readiness via a `{ type: 'ready' }` message.
 
 ```typescript
 private async initWorker() {
@@ -215,11 +214,9 @@ private async initWorker() {
 
 ### 6.1 Testing Strategy
 
-Use Playwright Component Testing (`@playwright/experimental-ct-vite`).
-
 **Shadow DOM Traversal — Mandatory Pattern**
 
-Playwright's `getByText()` and `getByRole()` do **not** pierce Shadow DOM by default. Always use
+Do **not** pierce Shadow DOM by default. Always use
 the explicit locator pattern below. Agents must not invent alternative locator strategies.
 
 ```typescript
@@ -234,62 +231,7 @@ await component.locator('pierce/#output').waitFor();
 await component.getByText('Hello World').isVisible();
 ```
 
-**Mandatory synchronisation gate for every test**
 
-Every test must wait for `data-ready="true"` before performing any assertions. This is a
-non-negotiable contract between the component and the test suite.
-
-```typescript
-import { test, expect } from '@playwright/experimental-ct-vite';
-import { MyComponent } from './my-component';
-
-test('should render value correctly', async ({ mount }) => {
-  const component = await mount(MyComponent, { props: { value: 'Hello World' } });
-
-  // ── Mandatory sync gate ──────────────────────────────────────────────────
-  // Never assert before data-ready="true". This is what prevents agent loops.
-  await component.locator('[data-ready="true"]').waitFor({ timeout: 5_000 });
-
-  // ── Assertions (always pierce Shadow DOM) ────────────────────────────────
-  await expect(component.locator('pierce/#output')).toHaveText('Hello World');
-});
-```
-
-### 6.2 Playwright Configuration
-
-`playwright.config.ts` enforces agent-safe defaults. The three settings that matter most for
-preventing agent loops are `retries: 0`, `timeout`, and `reporter`.
-
-- **`retries: 0`** converts ambiguous flakiness into a clean pass/fail signal. Without this,
-  Playwright retries failed tests and agents interpret each retry as new feedback, triggering
-  another code iteration.
-- **`timeout: 10_000`** hard-caps each test. Hanging tests (e.g. an unresolved Worker promise)
-  will never resolve on their own; this ensures the agent receives a failure signal quickly.
-- **JSON reporter in CI/agent runs** gives agents a machine-readable result they can parse
-  deterministically, rather than an HTML report they cannot open.
-
-```typescript
-// playwright.config.ts
-import { defineConfig } from '@playwright/experimental-ct-vite';
-
-const isAgentRun = process.env.AGENT_RUN === 'true' || process.env.CI === 'true';
-
-export default defineConfig({
-  retries: 0,        // Fail fast — no ambiguous retries for agents to misinterpret
-  timeout: 10_000,   // Hard ceiling per test; prevents hangs from blocking the agent
-  workers: 1,        // Serial execution in CI avoids race conditions agents misread as logic bugs
-
-  reporter: isAgentRun
-    ? [['json', { outputFile: 'test-results/results.json' }]]
-    : [['html', { open: 'never' }], ['list']],
-
-  use: {
-    ctViteConfig: {
-      // Inherits from vite.config.ts
-    },
-  },
-});
-```
 
 ### 6.3 Pre-commit Hooks & Agent Loops
 
@@ -304,32 +246,6 @@ To prevent LLM Agents from getting stuck in _Test-Fail-Retry_ loops:
 - **Agent Test Script:** Agents must always run `test:agent`, never the bare `test` script.
   This is enforced by naming convention and must be documented in any agent configuration file
   (e.g. `jules.config.json`, `.agentrc`, or equivalent).
-
-### 6.4 NPM Scripts Contract
-
-The following script names are **fixed conventions**. Do not rename them; agent tooling depends
-on them by name.
-
-```jsonc
-// package.json
-{
-  "scripts": {
-    // Human development — opens HTML reporter, allows retries
-    "test": "playwright test",
-
-    // ── Agent/CI entrypoint — ALWAYS use this in automated runs ──────────
-    // Sets AGENT_RUN=true, forces JSON reporter, retries=0, timeout=10s
-    "test:agent": "AGENT_RUN=true playwright test --reporter=json --retries=0 --timeout=10000",
-
-    // Unit tests only — safe for pre-commit hooks
-    "test:unit": "vitest run",
-
-    // Lint (run by lint-staged)
-    "lint": "eslint src --ext .ts",
-    "format": "prettier --write src"
-  }
-}
-```
 
 ---
 
@@ -349,7 +265,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'happy-dom',
-    exclude: ['**/node_modules/**', '**/dist/**', '**/playwright/**'],
+    exclude: ['**/node_modules/**', '**/dist/**'],
   },
 });
 ```
@@ -363,10 +279,6 @@ artifacts if they are not explicitly excluded. This causes commit failures that 
 unnecessary retry loops.
 
 ```gitignore
-# Playwright artifacts — never commit these
-test-results/
-playwright-report/
-/playwright/.cache/
 
 # Build output
 dist/
@@ -413,8 +325,6 @@ Use this checklist before opening a PR. Agents may use it as a structured pass/f
 - [ ] `attachEvents()` is guarded by `this._eventsAttached` boolean
 - [ ] `disconnectedCallback()` resets `this._eventsAttached = false`
 - [ ] `this.dataset.ready = 'true'` is set as the final step of initialisation
-- [ ] All Playwright tests `waitFor('[data-ready="true"]')` before asserting
-- [ ] All Playwright locators use `pierce/` for Shadow DOM content
-- [ ] `playwright.config.ts` has `retries: 0` and `timeout: 10_000`
-- [ ] `test-results/` and `playwright-report/` are in `.gitignore`
+- [ ] All tests `waitFor('[data-ready="true"]')` before asserting
+- [ ] `test-results/` are in `.gitignore`
 - [ ] CI/agent runs invoke `npm run test:agent`, not `npm test`
