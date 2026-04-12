@@ -1,0 +1,28 @@
+<!-- app-workspace template -->
+<div class="workspace">
+  <div class="workspace-header" id="workspace-header" style="display: none">
+    <div>
+      <div class="workspace-client-name" id="ws-client-name"></div>
+      <div style="font-size: 11px; color: var(--text3)" id="ws-client-id"></div>
+    </div>
+    <div class="session-tabs">
+      <div class="session-tab active" data-tab="bodymap">Body Map</div>
+      <div class="session-tab" data-tab="sessions">Session History</div>
+      <div class="session-tab" data-tab="profile">Profile</div>
+    </div>
+  </div>
+
+  <div class="workspace-body" id="workspace-body">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">⊙</div>
+      <div class="empty-title">No client selected</div>
+      <div class="empty-sub">
+        Select a client from the sidebar or create a new one to begin.
+      </div>
+    </div>
+
+    <div id="tab-content" style="display: contents">
+      <!-- Child components will be slotted or appended here -->
+    </div>
+  </div>
+</div>

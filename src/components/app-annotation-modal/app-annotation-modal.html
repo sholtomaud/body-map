@@ -1,0 +1,40 @@
+<!-- app-annotation-modal template -->
+<app-modal id="modal" title="Annotate Region">
+  <div slot="body">
+    <div class="popup-region" id="popup-region-name">Region</div>
+
+    <div class="label">SEVERITY (1–10)</div>
+    <div class="severity-bar" id="severity-bar"></div>
+
+    <div class="label" style="margin-top: 8px">TYPE</div>
+    <div class="type-grid" id="type-grid">
+      <div class="type-btn" data-type="Ache">Ache</div>
+      <div class="type-btn" data-type="Sharp">Sharp</div>
+      <div class="type-btn" data-type="Tightness">Tightness</div>
+      <div class="type-btn" data-type="Numbness">Numbness</div>
+      <div class="type-btn" data-type="Tenderness">Tenderness</div>
+      <div class="type-btn" data-type="Restriction">Restriction</div>
+    </div>
+
+    <div class="label">STATUS</div>
+    <div class="type-grid">
+      <div class="type-btn" id="status-acute" data-status="Acute">Acute</div>
+      <div class="type-btn" id="status-chronic" data-status="Chronic">
+        Chronic
+      </div>
+    </div>
+
+    <textarea
+      class="popup-notes"
+      id="popup-notes"
+      rows="2"
+      placeholder="Additional notes…"
+    ></textarea>
+  </div>
+  <div slot="footer">
+    <button class="btn btn-primary" id="btn-confirm" style="flex: 1">
+      Confirm & Ask AI
+    </button>
+    <button class="btn" id="btn-cancel">Cancel</button>
+  </div>
+</app-modal>

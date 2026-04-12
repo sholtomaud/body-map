@@ -1,0 +1,503 @@
+<!-- app-bodymap template -->
+<div class="bodymap-panel">
+  <div class="bodymap-controls">
+    <label>Session mode:</label>
+    <div class="mode-toggle">
+      <div class="mode-btn active" id="mode-pre">Pre-treatment</div>
+      <div class="mode-btn" id="mode-post">Post-treatment</div>
+    </div>
+    <div style="margin-left: auto; display: flex; gap: 6px">
+      <button class="btn btn-sm" id="btn-save">Save Session</button>
+      <button class="btn btn-sm btn-danger" id="btn-clear">Clear</button>
+    </div>
+  </div>
+
+  <div class="bodymap-figures">
+    <div class="figure-wrap">
+      <div class="figure-label">Anterior (Front)</div>
+      <div class="figure-svg-wrap" id="front-wrap">
+        <svg
+          viewBox="0 0 200 480"
+          xmlns="http://www.w3.org/2000/svg"
+          id="front-svg"
+        >
+          <defs>
+            <style>
+              .region {
+                fill: #e8e4de;
+                stroke: #b8b0a6;
+                stroke-width: 1;
+                cursor: crosshair;
+                transition: fill 0.15s;
+              }
+              .region:hover {
+                fill: #d4cfc7;
+              }
+            </style>
+          </defs>
+          <ellipse
+            class="region"
+            data-region="Head"
+            cx="100"
+            cy="30"
+            rx="28"
+            ry="30"
+          />
+          <rect
+            class="region"
+            data-region="Neck (Anterior)"
+            x="88"
+            y="57"
+            width="24"
+            height="18"
+            rx="4"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Shoulder"
+            cx="58"
+            cy="82"
+            rx="22"
+            ry="16"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Shoulder"
+            cx="142"
+            cy="82"
+            rx="22"
+            ry="16"
+          />
+          <rect
+            class="region"
+            data-region="Upper Chest"
+            x="72"
+            y="74"
+            width="56"
+            height="28"
+            rx="5"
+          />
+          <rect
+            class="region"
+            data-region="Lower Chest / Sternum"
+            x="72"
+            y="100"
+            width="56"
+            height="22"
+            rx="5"
+          />
+          <rect
+            class="region"
+            data-region="Left Upper Arm"
+            x="36"
+            y="94"
+            width="20"
+            height="52"
+            rx="8"
+          />
+          <rect
+            class="region"
+            data-region="Right Upper Arm"
+            x="144"
+            y="94"
+            width="20"
+            height="52"
+            rx="8"
+          />
+          <rect
+            class="region"
+            data-region="Abdomen"
+            x="74"
+            y="120"
+            width="52"
+            height="56"
+            rx="6"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Elbow"
+            cx="46"
+            cy="154"
+            rx="10"
+            ry="10"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Elbow"
+            cx="154"
+            cy="154"
+            rx="10"
+            ry="10"
+          />
+          <rect
+            class="region"
+            data-region="Left Forearm"
+            x="36"
+            y="162"
+            width="18"
+            height="44"
+            rx="7"
+          />
+          <rect
+            class="region"
+            data-region="Right Forearm"
+            x="146"
+            y="162"
+            width="18"
+            height="44"
+            rx="7"
+          />
+          <rect
+            class="region"
+            data-region="Hips / Pelvis"
+            x="72"
+            y="174"
+            width="56"
+            height="30"
+            rx="6"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Wrist / Hand"
+            cx="44"
+            cy="218"
+            rx="12"
+            ry="14"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Wrist / Hand"
+            cx="156"
+            cy="218"
+            rx="12"
+            ry="14"
+          />
+          <rect
+            class="region"
+            data-region="Left Thigh (Anterior)"
+            x="74"
+            y="202"
+            width="24"
+            height="70"
+            rx="8"
+          />
+          <rect
+            class="region"
+            data-region="Right Thigh (Anterior)"
+            x="102"
+            y="202"
+            width="24"
+            height="70"
+            rx="8"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Knee"
+            cx="86"
+            cy="282"
+            rx="14"
+            ry="12"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Knee"
+            cx="114"
+            cy="282"
+            rx="14"
+            ry="12"
+          />
+          <rect
+            class="region"
+            data-region="Left Shin / Tibia"
+            x="74"
+            y="292"
+            width="22"
+            height="72"
+            rx="8"
+          />
+          <rect
+            class="region"
+            data-region="Right Shin / Tibia"
+            x="103"
+            y="292"
+            width="22"
+            height="72"
+            rx="8"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Ankle / Foot"
+            cx="84"
+            cy="378"
+            rx="16"
+            ry="12"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Ankle / Foot"
+            cx="115"
+            cy="378"
+            rx="16"
+            ry="12"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <div class="figure-wrap">
+      <div class="figure-label">Posterior (Back)</div>
+      <div class="figure-svg-wrap" id="back-wrap">
+        <svg
+          viewBox="0 0 200 480"
+          xmlns="http://www.w3.org/2000/svg"
+          id="back-svg"
+        >
+          <defs>
+            <style>
+              .region {
+                fill: #e8e4de;
+                stroke: #b8b0a6;
+                stroke-width: 1;
+                cursor: crosshair;
+                transition: fill 0.15s;
+              }
+              .region:hover {
+                fill: #d4cfc7;
+              }
+            </style>
+          </defs>
+          <ellipse
+            class="region"
+            data-region="Head (Posterior)"
+            cx="100"
+            cy="30"
+            rx="28"
+            ry="30"
+          />
+          <rect
+            class="region"
+            data-region="Neck (Posterior)"
+            x="88"
+            y="57"
+            width="24"
+            height="18"
+            rx="4"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Trapezius"
+            cx="64"
+            cy="86"
+            rx="26"
+            ry="18"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Trapezius"
+            cx="136"
+            cy="86"
+            rx="26"
+            ry="18"
+          />
+          <rect
+            class="region"
+            data-region="Upper Back / Thoracic"
+            x="74"
+            y="74"
+            width="52"
+            height="32"
+            rx="5"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Scapula / Shoulder Blade"
+            cx="68"
+            cy="108"
+            rx="18"
+            ry="20"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Scapula / Shoulder Blade"
+            cx="132"
+            cy="108"
+            rx="18"
+            ry="20"
+          />
+          <rect
+            class="region"
+            data-region="Mid Back"
+            x="78"
+            y="104"
+            width="44"
+            height="30"
+            rx="5"
+          />
+          <rect
+            class="region"
+            data-region="Left Upper Arm (Posterior)"
+            x="36"
+            y="94"
+            width="20"
+            height="52"
+            rx="8"
+          />
+          <rect
+            class="region"
+            data-region="Right Upper Arm (Posterior)"
+            x="144"
+            y="94"
+            width="20"
+            height="52"
+            rx="8"
+          />
+          <rect
+            class="region"
+            data-region="Lumbar / Lower Back"
+            x="78"
+            y="132"
+            width="44"
+            height="44"
+            rx="6"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Elbow (Posterior)"
+            cx="46"
+            cy="154"
+            rx="10"
+            ry="10"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Elbow (Posterior)"
+            cx="154"
+            cy="154"
+            rx="10"
+            ry="10"
+          />
+          <rect
+            class="region"
+            data-region="Left Forearm (Posterior)"
+            x="36"
+            y="162"
+            width="18"
+            height="44"
+            rx="7"
+          />
+          <rect
+            class="region"
+            data-region="Right Forearm (Posterior)"
+            x="146"
+            y="162"
+            width="18"
+            height="44"
+            rx="7"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Gluteus"
+            cx="86"
+            cy="190"
+            rx="20"
+            ry="20"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Gluteus"
+            cx="114"
+            cy="190"
+            rx="20"
+            ry="20"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Wrist / Hand (Posterior)"
+            cx="44"
+            cy="218"
+            rx="12"
+            ry="14"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Wrist / Hand (Posterior)"
+            cx="156"
+            cy="218"
+            rx="12"
+            ry="14"
+          />
+          <rect
+            class="region"
+            data-region="Left Hamstring"
+            x="74"
+            y="208"
+            width="22"
+            height="64"
+            rx="8"
+          />
+          <rect
+            class="region"
+            data-region="Right Hamstring"
+            x="103"
+            y="208"
+            width="22"
+            height="64"
+            rx="8"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Popliteal / Knee (Posterior)"
+            cx="85"
+            cy="280"
+            rx="13"
+            ry="11"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Popliteal / Knee (Posterior)"
+            cx="115"
+            cy="280"
+            rx="13"
+            ry="11"
+          />
+          <rect
+            class="region"
+            data-region="Left Calf / Gastrocnemius"
+            x="74"
+            y="290"
+            width="22"
+            height="70"
+            rx="8"
+          />
+          <rect
+            class="region"
+            data-region="Right Calf / Gastrocnemius"
+            x="104"
+            y="290"
+            width="22"
+            height="70"
+            rx="8"
+          />
+          <ellipse
+            class="region"
+            data-region="Left Achilles / Ankle"
+            cx="84"
+            cy="373"
+            rx="14"
+            ry="11"
+          />
+          <ellipse
+            class="region"
+            data-region="Right Achilles / Ankle"
+            cx="115"
+            cy="373"
+            rx="14"
+            ry="11"
+          />
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="region-tooltip" id="region-tooltip"></div>
