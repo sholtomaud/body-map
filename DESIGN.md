@@ -1,64 +1,64 @@
+# DESIGN.md
 # Design Specification: Native Web Component Architecture
 
 ## 1. Overview
 
-This project is a strict, zero-dependency web application built on native Web Standards (Web
-Components, Web Workers, WebGPU, WASM). The architecture follows a Microsoft-inspired
-"External Template Pattern" to maximise IDE tooling, accessibility auditing, and separation of
-concerns.
+This project is a strict, zero-dependency web application built on native web standards:
+Web Components, Web Workers, WebGPU, and WASM. The architecture follows an
+"External Template Pattern" to maximise IDE tooling, accessibility auditing, and separation
+of concerns.
 
 ### Core Principles
 
-- **No Runtime Libraries**: All UI logic is native Custom Elements.
-- **Test-Driven Development (TDD)**: Code is not committed unless tests pass.
-- **Native Performance**: Leveraging WebAssembly for logic and WebGPU for graphics, offloaded to Web Workers.
-- **Stability for Automation**: DOM structures are preserved during updates to prevent LLM-Agent "flaky test" loops.
-- **Agent-Safe Contracts**: All lifecycle hooks, readiness signals, and test entry points are enforced conventions, not suggestions.
+- **No Runtime Libraries:** All UI logic is native Custom Elements.
+- **Test-Driven Development (TDD):** Code is not committed unless tests pass.
+- **Native Performance:** WebAssembly for logic and WebGPU for graphics, offloaded to Web Workers.
+- **Stability for Automation:** DOM structures are preserved during updates to prevent LLM agent flaky-test loops.
+- **Agent-Safe Contracts:** All lifecycle hooks, readiness signals, and test entry points are enforced conventions, not suggestions.
 
 ---
 
 ## 2. Technology Stack
 
-| Category | Technology | Purpose |
-| :--- | :--- | :--- |
-| Language | TypeScript | Type safety and enhanced tooling. |
-| Build | Vite | Fast dev server, optimised production builds, HTML/CSS imports. |
-| Runtime | Native Web Components | Shadow DOM, Custom Elements v1. |
-| Styling | Constructable Stylesheets | Performance and scoped CSS. |
-| Logic | WebAssembly (WASM) | High-performance computation. |
-| Parallelism | Web Workers | Non-blocking main thread execution. |
-| Graphics | WebGPU | High-performance rendering (if applicable). |
-| Linting | ESLint + Prettier | Code consistency. |
-| Testing | Vite | Component-level integration tests. |
-| Git Hooks | husky + lint-staged | Pre-commit quality gates. |
+| Category    | Technology                   | Purpose                                              |
+| :---------- | :--------------------------- | :--------------------------------------------------- |
+| Language    | TypeScript                   | Type safety and enhanced tooling.                    |
+| Build       | Vite                         | Fast dev server, optimised production builds.        |
+| Runtime     | Native Web Components        | Shadow DOM, Custom Elements v1.                      |
+| Styling     | Constructable Stylesheets    | Performance and scoped CSS.                          |
+| Logic       | WebAssembly (WASM)           | High-performance computation.                        |
+| Parallelism | Web Workers                  | Non-blocking main thread execution.                  |
+| Graphics    | WebGPU                       | High-performance rendering (if applicable).          |
+| Linting     | ESLint + Prettier            | Code consistency.                                    |
+| Testing     | Vitest                       | Component-level integration tests.                   |
 
 ---
 
-## 3. Component Architecture (The "Microsoft" Pattern)
+## 3. Component Architecture
 
-To ensure full IDE support (IntelliSense, Emmet, ARIA checking) while maintaining a clean
-TypeScript contract, we strictly separate the Definition (TS), Template (HTML), and Styles (CSS).
+Every component strictly separates its definition (TS), template (HTML), and styles (CSS)
+to ensure full IDE support (IntelliSense, Emmet, ARIA checking) alongside a clean TypeScript
+contract.
 
 ### 3.1 File Structure
 
-Every component resides in its own directory containing three files:
+Every component resides in its own directory containing exactly three files:
 
 ```
 src/components/
 └── my-component/
-    ├── my-component.ts    # Class Definition & Logic
-    ├── my-component.html  # Template Structure
-    └── my-component.css   # Constructable Styles
+    ├── my-component.ts    # Class definition & logic
+    ├── my-component.html  # Template structure
+    └── my-component.css   # Constructable styles
 ```
 
-### 3.2 The Component Contract (TS)
+### 3.2 The Component Contract
 
-The TypeScript file defines the API and imports static assets. Two patterns are **mandatory** to
-prevent LLM Agent test loops:
+Two patterns are **mandatory** to prevent LLM agent test loops:
 
-1. **Non-Destructive Rendering** — the Shadow DOM is only written once; subsequent updates
+1. **Non-Destructive Rendering** — the Shadow DOM is written exactly once; subsequent updates
    target specific nodes via `updateUI()`.
-2. **Event-Guard** — `attachEvents()` is protected by a boolean flag to prevent duplicate
+2. **Event Guard** — `attachEvents()` is protected by a boolean flag to prevent duplicate
    listeners on remount.
 
 ```typescript
@@ -69,7 +69,6 @@ import stylesheet from './my-component.css?inline';
 export class MyComponent extends HTMLElement {
   public value: string = 'default';
 
-  // ─── Guard against duplicate event listeners on remount ───────────────────
   private _eventsAttached = false;
 
   public static get observedAttributes(): string[] {
@@ -83,29 +82,25 @@ export class MyComponent extends HTMLElement {
 
   connectedCallback() {
     this.render();
-
-    // Guard is mandatory
     if (!this._eventsAttached) {
       this.attachEvents();
       this._eventsAttached = true;
     }
+    this.dataset.ready = 'true'; // ← mandatory last line
   }
 
   disconnectedCallback() {
-    // Reset guard so the component is safe to remount (e.g. in test teardown)
-    this._eventsAttached = false;
+    this._eventsAttached = false; // Reset so the component is safe to remount
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (oldValue !== newValue) {
-      // Target specific elements — never call render() here
-      this.updateUI();
+      this.updateUI(); // Never call render() here
     }
   }
 
   private render() {
-    // ── Non-Destructive: write the DOM exactly once ────────────────────────
-    if (!this.shadowRoot!.innerHTML) {
+    if (!this.shadowRoot!.innerHTML) { // Write the DOM exactly once
       this.shadowRoot!.innerHTML = templateHtml;
       const sheet = new CSSStyleSheet();
       sheet.replaceSync(stylesheet);
@@ -120,7 +115,6 @@ export class MyComponent extends HTMLElement {
   }
 
   private attachEvents() {
-    // Event delegation — use this.shadowRoot as the single delegation root
     this.shadowRoot!.addEventListener('click', (e) => {
       // handle events
     });
@@ -128,27 +122,18 @@ export class MyComponent extends HTMLElement {
 }
 ```
 
-### 3.3 The `data-ready` Contract (Mandatory)
+### 3.3 The `data-ready` Contract
 
 Every component **must** set `this.dataset.ready = 'true'` as the final statement of its
-initialisation path. For synchronous components this happens at the end of `connectedCallback`.
-For components that initialise a Worker or WASM module, it happens inside the resolved promise.
+initialisation path. This attribute is the only synchronisation primitive that agents and
+tests should rely on.
 
-This attribute is the **only** synchronisation primitive tha LLM Agents
-should rely on. Tests must not assert on component internals until this attribute is present.
+- **Synchronous components:** set at the end of `connectedCallback`.
+- **Async components (Worker / WASM):** set inside the resolved promise, after the worker
+  confirms readiness.
 
 ```typescript
-// Synchronous component — set at end of connectedCallback
-connectedCallback() {
-  this.render();
-  if (!this._eventsAttached) {
-    this.attachEvents();
-    this._eventsAttached = true;
-  }
-  this.dataset.ready = 'true'; // ← mandatory last line
-}
-
-// Async component (Worker / WASM) — set inside resolved promise
+// Async component — data-ready is set only after the worker is ready
 async connectedCallback() {
   this.render();
   if (!this._eventsAttached) {
@@ -157,18 +142,32 @@ async connectedCallback() {
   }
   await this.initWorker(); // sets this.dataset.ready = 'true' internally when resolved
 }
+
+private async initWorker() {
+  this._worker = new Worker(new URL('./my-component.worker.ts', import.meta.url), {
+    type: 'module',
+  });
+
+  await new Promise<void>((resolve) => {
+    this._worker!.addEventListener('message', (e) => {
+      if (e.data.type === 'ready') resolve();
+    }, { once: true });
+  });
+
+  this.dataset.ready = 'true'; // ← only set after worker confirms readiness
+}
 ```
 
 ---
 
 ## 4. Theming Strategy
 
-CSS Variables are defined on `:root` (light) and `[data-theme="dark"]` (dark). Components
-reference only these variables for all colour, spacing, and typography tokens. This ensures
+CSS variables are defined on `:root` (light) and `[data-theme="dark"]` (dark). Components
+reference only these variables for all colour, spacing, and typography tokens, ensuring
 instant theme switching with zero JavaScript in the render loop.
 
 ```css
-/* global tokens — global.css */
+/* global.css */
 :root {
   --color-surface: #ffffff;
   --color-text: #111111;
@@ -184,82 +183,83 @@ instant theme switching with zero JavaScript in the render loop.
 
 ---
 
-## 5. Asynchronous Architecture (Agents & Workers)
+## 5. Asynchronous Architecture
 
 The application uses a **Main Thread + Background Agents** model.
 
 - **UI Agent (Main Thread):** Hosts Web Components, handles DOM and user input.
-- **Compute Agent (Web Worker):** Loads WASM modules for heavy calculations. Posts messages back to the component via a typed `MessageChannel`.
-- **Lifecycle Signalling:** Components must only set `this.dataset.ready = 'true'` _after_ their Worker or WASM module has confirmed readiness via a `{ type: 'ready' }` message.
+- **Compute Agent (Web Worker):** Loads WASM modules for heavy calculations. Posts messages
+  back to the component via a typed `MessageChannel`.
+- **Lifecycle Signalling:** Components must only set `this.dataset.ready = 'true'` after
+  their worker or WASM module has confirmed readiness via a `{ type: 'ready' }` message.
+
+Worker communication uses a typed message protocol:
 
 ```typescript
-private async initWorker() {
-  this._worker = new Worker(new URL('./my-component.worker.ts', import.meta.url), {
-    type: 'module',
-  });
+// UI → Worker
+worker.postMessage({
+  type: 'PROCESS_DATA',
+  payload: new Float32Array([1, 2, 3, 4])
+});
 
-  await new Promise<void>((resolve) => {
-    this._worker!.addEventListener('message', (e) => {
-      if (e.data.type === 'ready') resolve();
-    }, { once: true });
-  });
-
-  this.dataset.ready = 'true'; // ← only set after Worker confirms readiness
-}
+// Worker → UI
+self.postMessage({
+  type: 'DATA_PROCESSED',
+  payload: resultBuffer,
+  transferable: [resultBuffer.buffer] // Zero-copy transfer
+});
 ```
 
 ---
 
-## 6. TDD Workflow & Quality Gates
+## 6. Testing Strategy
 
-### 6.1 Testing Strategy
+### 6.1 Readiness Gate
 
-**Shadow DOM Traversal — Mandatory Pattern**
+Every test must wait for `[data-ready="true"]` before making any assertions on component
+internals. This is the only permitted synchronisation primitive.
 
-Do **not** pierce Shadow DOM by default. Always use
-the explicit locator pattern below. Agents must not invent alternative locator strategies.
+### 6.2 Shadow DOM Traversal
+
+Always use the explicit pierce pattern. Do not invent alternative locator strategies.
 
 ```typescript
-// ✅ CORRECT — explicit shadow root traversal
+// ✅ Correct
 const shadow = component.locator('my-component').locator('pierce/');
 await shadow.getByText('Hello World').waitFor();
 
-// ✅ ALSO CORRECT — if the component IS the root mount point
+// ✅ Also correct — if the component IS the root mount point
 await component.locator('pierce/#output').waitFor();
 
-// ❌ WRONG — will silently fail on Shadow DOM content
+// ❌ Wrong — silently fails on Shadow DOM content
 await component.getByText('Hello World').isVisible();
 ```
 
+### 6.3 Test Script
 
+Agents must always run `npm run test:agent`, not bare `npm test`.
 
-### 6.3 Pre-commit Hooks & Agent Loops
+```json
+"scripts": {
+  "test:agent": "vitest run --reporter=json --retry=0"
+}
+```
 
-Using **husky** and **lint-staged**.
-
-To prevent LLM Agents from getting stuck in _Test-Fail-Retry_ loops:
-
-- **Environment Detection:** Pre-commit hooks skip long-running E2E tests when `CI=true` or
-  `AGENT_RUN=true`.
-- **No-Verify:** Automated agents should use `git commit --no-verify` only when the pipeline
-  has already validated the environment. Never use it to bypass a failing test.
-- **Agent Test Script:** Agents must always run `test:agent`, never the bare `test` script.
-  This is enforced by naming convention and must be documented in any agent configuration file
-  (e.g. `jules.config.json`, `.agentrc`, or equivalent).
+`--reporter=json` produces machine-readable output. `--retry=0` ensures each failure is a
+clean, unambiguous signal rather than a masked flake.
 
 ---
 
-## 7. Build Configuration (Vite)
+## 7. Build Configuration
 
-`vite.config.ts` handles raw asset imports and defines test globals. The `assetsInclude` list
-must be kept in sync with any new static asset types imported by components.
+`vite.config.ts` handles raw asset imports and defines test globals. The `assetsInclude`
+list must be kept in sync with any new static asset types imported by components.
 
 ```typescript
 // vite.config.ts
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  // Allow ?raw and ?inline imports for HTML/CSS component templates
   assetsInclude: ['**/*.html', '**/*.wasm'],
 
   test: {
@@ -274,57 +274,16 @@ export default defineConfig({
 
 ## 8. .gitignore Requirements
 
-The following paths **must** be in `.gitignore`. LLM Agents will attempt to stage binary test
-artifacts if they are not explicitly excluded. This causes commit failures that trigger
-unnecessary retry loops.
+The following paths must be present in `.gitignore`. Without them, agents will attempt to
+stage binary artifacts and trigger unnecessary commit failures.
 
 ```gitignore
-
 # Build output
 dist/
 
 # Dependencies
 node_modules/
+
+# Test artifacts
+test-results/
 ```
-
----
-
-## 9. Agent Configuration Reference
-
-When configuring a Jules, Copilot Workspace, Devin, or similar LLM Agent to work on this
-repository, the following settings must be applied.
-
-| Setting | Required Value | Reason |
-| :--- | :--- | :--- |
-| Test command | `npm run test:agent` | Forces JSON reporter and `retries=0` |
-| Commit command | `git commit -m "..."` | Do NOT use `--no-verify` unless pipeline already passed |
-| Environment variable | `AGENT_RUN=true` | Activates fast-exit paths in hooks and config |
-| Max test retries | `0` | Agents must not retry; each failure is a clean signal |
-| Timeout per test | `10 000 ms` | Prevents hangs from blocking the agent indefinitely |
-| Readiness assertion | `[data-ready="true"]` | Must appear as first `waitFor` in every test |
-
-### Agent Loop Escape Hatch
-
-If an agent is stuck in a _Test-Fail-Retry_ loop and cannot make progress, the correct
-escalation path is:
-
-1. Check that `npm run test:agent` is being used (not bare `test`).
-2. Verify `data-ready="true"` is awaited before all assertions.
-3. Verify Shadow DOM is being pierced with `pierce/` in locators.
-4. If all three are correct and tests still fail, the failure is a genuine regression —
-   do not attempt further retries; report the failure to a human reviewer.
-
----
-
-## 10. Quick-Reference Checklist
-
-Use this checklist before opening a PR. Agents may use it as a structured pass/fail gate.
-
-- [ ] Each component has exactly three files: `.ts`, `.html`, `.css`
-- [ ] `render()` is guarded by `if (!this.shadowRoot!.innerHTML)` — never re-renders the full DOM
-- [ ] `attachEvents()` is guarded by `this._eventsAttached` boolean
-- [ ] `disconnectedCallback()` resets `this._eventsAttached = false`
-- [ ] `this.dataset.ready = 'true'` is set as the final step of initialisation
-- [ ] All tests `waitFor('[data-ready="true"]')` before asserting
-- [ ] `test-results/` are in `.gitignore`
-- [ ] CI/agent runs invoke `npm run test:agent`, not `npm test`
