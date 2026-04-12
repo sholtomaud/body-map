@@ -1,0 +1,15 @@
+<!-- app-modal template -->
+<div class="modal-overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="title">Modal Title</div>
+      <button class="btn btn-sm" id="btn-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <slot name="body"></slot>
+    </div>
+    <div class="modal-footer">
+      <slot name="footer"></slot>
+    </div>
+  </div>
+</div>

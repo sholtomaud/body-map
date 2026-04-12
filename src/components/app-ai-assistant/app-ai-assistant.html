@@ -1,0 +1,29 @@
+<!-- app-ai-assistant template -->
+<div class="ai-pane">
+  <div class="ai-pane-header">
+    <div class="ai-indicator"></div>
+    <div>
+      <div class="ai-pane-title">AI Clinical Assistant</div>
+      <div class="ai-pane-sub">Anonymised data only</div>
+    </div>
+  </div>
+  <div class="ai-messages" id="ai-messages"></div>
+  <div class="ai-disclaimer">
+    Data sent to AI is fully anonymised — no name, DOB or contact info.
+  </div>
+  <div class="ai-input-wrap">
+    <div class="ai-input-row">
+      <textarea
+        class="ai-textarea"
+        id="ai-input"
+        placeholder="Describe findings or ask a question…"
+        rows="1"
+      ></textarea>
+      <button class="ai-send-btn" id="btn-send">
+        <svg viewBox="0 0 24 24">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>

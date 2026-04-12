@@ -1,0 +1,60 @@
+<!-- app-client-modal template -->
+<app-modal id="modal" title="New Client">
+  <div slot="body">
+    <div class="modal-section-title">Personal Details</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">First Name</label>
+        <input class="form-input" id="nc-first" placeholder="First name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Name</label>
+        <input class="form-input" id="nc-last" placeholder="Last name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date of Birth</label>
+        <input class="form-input" id="nc-dob" type="date" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input
+          class="form-input"
+          id="nc-phone"
+          placeholder="e.g. 04xx xxx xxx"
+        />
+      </div>
+      <div class="form-group form-group-full">
+        <label class="form-label">Email</label>
+        <input
+          class="form-input"
+          id="nc-email"
+          placeholder="email@example.com"
+        />
+      </div>
+    </div>
+
+    <div class="modal-section-title">Health & Contraindications</div>
+    <div class="contraindication-grid" id="contra-grid"></div>
+
+    <div class="form-group" style="margin-top: 12px">
+      <label class="form-label">Additional Medical Notes</label>
+      <textarea
+        class="form-input"
+        id="nc-notes"
+        rows="2"
+        placeholder="Medications, surgeries, allergies…"
+        style="resize: none"
+      ></textarea>
+    </div>
+
+    <div class="anon-notice">
+      <strong>Privacy notice:</strong> Personal details (name, DOB, contact) are
+      stored locally and never sent to AI services. The AI receives only an
+      anonymous reference ID and clinical body-map data.
+    </div>
+  </div>
+  <div slot="footer">
+    <button class="btn" id="btn-cancel">Cancel</button>
+    <button class="btn btn-primary" id="btn-save">Create Client</button>
+  </div>
+</app-modal>

@@ -1,0 +1,66 @@
+<!-- app-auth template -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm1 14h-2v-1h2v1zm0-3H11v-.84C9.86 11.5 9 10.34 9 9h2c0 .55.45 1 1 1s1-.45 1-1h2c0 1.34-.86 2.5-2 2.16V13z"
+          />
+        </svg>
+      </div>
+      <div>
+        <span class="auth-logo-text">BodyMap</span>
+        <span class="auth-logo-sub">Massage Therapy Assistant</span>
+      </div>
+    </div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login">Sign In</div>
+      <div class="auth-tab" id="tab-register">Register</div>
+    </div>
+    <div class="auth-error" id="auth-error"></div>
+    <div id="login-form">
+      <div class="form-group">
+        <label class="form-label">Therapist Name</label>
+        <input class="form-input" id="login-name" placeholder="Your name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Passphrase</label>
+        <input
+          class="form-input"
+          id="login-pass"
+          type="password"
+          placeholder="Enter passphrase"
+        />
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-login">Sign In</button>
+    </div>
+    <div id="register-form" style="display: none">
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input class="form-input" id="reg-name" placeholder="Full name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Create Passphrase</label>
+        <input
+          class="form-input"
+          id="reg-pass"
+          type="password"
+          placeholder="Min. 6 characters"
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Passphrase</label>
+        <input
+          class="form-input"
+          id="reg-pass2"
+          type="password"
+          placeholder="Repeat passphrase"
+        />
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-register">
+        Create Account
+      </button>
+    </div>
+  </div>
+</div>
