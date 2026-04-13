@@ -1,0 +1,42 @@
+<!-- app-save-session-modal template -->
+<app-modal id="modal" title="Save Session">
+  <div class="soap-form" slot="body">
+    <div class="form-group">
+      <label for="soap-s">Subjective (S)</label>
+      <textarea
+        id="soap-s"
+        placeholder="Client's self-reported symptoms, pain level, history..."
+        autocomplete="off"
+      ></textarea>
+    </div>
+    <div class="form-group">
+      <label for="soap-o">Objective (O)</label>
+      <textarea
+        id="soap-o"
+        placeholder="Therapist's observations, posture, range of motion, palpation..."
+        autocomplete="off"
+      ></textarea>
+    </div>
+    <div class="form-group">
+      <label for="soap-a">Assessment (A)</label>
+      <textarea
+        id="soap-a"
+        placeholder="Clinical reasoning, progress, response to treatment..."
+        autocomplete="off"
+      ></textarea>
+    </div>
+    <div class="form-group">
+      <label for="soap-p">Plan (P)</label>
+      <textarea
+        id="soap-p"
+        placeholder="Future treatment goals, exercises, follow-up..."
+        autocomplete="off"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="modal-actions" slot="footer">
+    <button class="btn btn-outline" id="btn-cancel">Cancel</button>
+    <button class="btn" id="btn-save">Save Session</button>
+  </div>
+</app-modal>

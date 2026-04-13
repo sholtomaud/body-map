@@ -1,0 +1,46 @@
+/* app-save-session-modal styles */
+.soap-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text1);
+}
+
+textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface2);
+  color: var(--text1);
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  min-width: 0; /* Prevention of layout overlap in multi-column CSS Grid forms */
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}

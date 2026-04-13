@@ -19,6 +19,12 @@ interface Session {
   mode: "pre" | "post";
   annotations: Annotation[];
   therapistNotes: string;
+  soap?: {
+    s: string;
+    o: string;
+    a: string;
+    p: string;
+  };
 }
 
 interface Client {

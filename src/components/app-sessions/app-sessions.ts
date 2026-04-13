@@ -85,6 +85,18 @@ export class AppSessions extends HTMLElement {
                       )
                       .join("")}
                 </div>
+                ${
+                  s.soap
+                    ? `
+                    <div class="session-soap">
+                        ${s.soap.s ? `<div class="soap-entry"><span class="soap-label">S:</span> ${s.soap.s}</div>` : ""}
+                        ${s.soap.o ? `<div class="soap-entry"><span class="soap-label">O:</span> ${s.soap.o}</div>` : ""}
+                        ${s.soap.a ? `<div class="soap-entry"><span class="soap-label">A:</span> ${s.soap.a}</div>` : ""}
+                        ${s.soap.p ? `<div class="soap-entry"><span class="soap-label">P:</span> ${s.soap.p}</div>` : ""}
+                    </div>
+                `
+                    : ""
+                }
             </div>
         `,
       )
