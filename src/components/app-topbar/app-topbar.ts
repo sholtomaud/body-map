@@ -51,11 +51,6 @@ export class AppTopbar extends HTMLElement {
 
   private attachEvents() {
     const shadow = this.shadowRoot!;
-    shadow.getElementById("btn-new-client")?.addEventListener("click", () => {
-      this.dispatchEvent(
-        new CustomEvent("new-client", { bubbles: true, composed: true }),
-      );
-    });
     shadow.getElementById("btn-logout")?.addEventListener("click", () => {
       this.dispatchEvent(
         new CustomEvent("logout", { bubbles: true, composed: true }),

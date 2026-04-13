@@ -56,6 +56,73 @@ body {
   overflow: hidden;
 }
 
+app-sidebar,
+app-workspace,
+app-bodymap,
+app-ai-assistant,
+app-sessions,
+app-profile {
+  display: flex;
+  flex-direction: column;
+}
+
+app-sidebar {
+  height: 100%;
+}
+
+app-workspace {
+  flex: 1;
+  min-width: 0;
+}
+
 [hidden] {
   display: none !important;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  height: 32px;
+}
+
+.btn:hover {
+  background: var(--surface2);
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.btn-danger {
+  background: var(--warn);
+  color: white;
+  border-color: var(--warn);
+}
+
+.btn-danger:hover {
+  background: #a93226;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.btn-primary:hover {
+  background: #234a31;
 }
