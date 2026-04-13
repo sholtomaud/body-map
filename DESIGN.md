@@ -30,7 +30,7 @@ of concerns.
 | Parallelism | Web Workers                  | Non-blocking main thread execution.                  |
 | Graphics    | WebGPU                       | High-performance rendering (if applicable).          |
 | Linting     | ESLint + Prettier            | Code consistency.                                    |
-| Testing     | Vitest                       | Component-level integration tests.                   |
+| Testing     | Vitest + Playwright          | Browser-native component integration tests.          |
 
 ---
 
@@ -264,6 +264,12 @@ export default defineConfig({
 
   test: {
     globals: true,
+    browser: {
+      enabled: true,
+      name: 'chromium',
+      provider: 'playwright',
+      headless: true,
+    },
     exclude: ['**/node_modules/**', '**/dist/**'],
   },
 });
