@@ -12,3 +12,9 @@ test-results/
 .idea/
 *.swp
 *.log
+
+node_modules
+dist
+*.log
+coverage
+.vite

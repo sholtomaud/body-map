@@ -3,6 +3,10 @@ import { playwright } from '@vitest/browser-playwright';
 
 export default defineConfig({
   assetsInclude: ['**/*.html'],
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+  },
   test: {
     globals: true,
     browser: {
