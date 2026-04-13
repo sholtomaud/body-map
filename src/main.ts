@@ -13,6 +13,7 @@ import "./components/app-sessions/app-sessions";
 import "./components/app-profile/app-profile";
 import "./components/app-client-modal/app-client-modal";
 import "./components/app-annotation-modal/app-annotation-modal";
+import "./components/app-save-session-modal/app-save-session-modal";
 
 class App {
   private authEl!: any;
@@ -25,6 +26,7 @@ class App {
   private profileEl!: any;
   private clientModalEl!: any;
   private annotationModalEl!: any;
+  private saveSessionModalEl!: any;
 
   private currentClient: any = null;
   private currentAnnotations: any[] = [];
@@ -52,6 +54,7 @@ class App {
     this.profileEl = document.querySelector("app-profile");
     this.clientModalEl = document.querySelector("app-client-modal");
     this.annotationModalEl = document.querySelector("app-annotation-modal");
+    this.saveSessionModalEl = document.querySelector("app-save-session-modal");
   }
 
   attachEvents() {
@@ -105,7 +108,13 @@ class App {
     });
 
     window.addEventListener("save-session", () => {
-      this.saveSession();
+      if (!this.currentClient || this.currentAnnotations.length === 0)
+        return alert("No annotations to save.");
+      this.saveSessionModalEl.show();
+    });
+
+    window.addEventListener("confirm-session-save", (e: any) => {
+      this.saveSession(e.detail.soap);
     });
 
     window.addEventListener("clear-annotations", () => {
@@ -169,7 +178,6 @@ class App {
     localStorage.removeItem("currentTherapist");
   }
 
-
   // Re-implemented selectClient to avoid multiple subscriptions
   handleClientSelection(id: string, clients: any[]) {
     this.currentClient = clients.find((c: any) => c.uuid === id);
@@ -204,7 +212,7 @@ class App {
     if (tab === "profile") this.profileEl.client = this.currentClient;
   }
 
-  saveSession() {
+  saveSession(soap: any = null) {
     if (!this.currentClient || this.currentAnnotations.length === 0)
       return alert("No annotations to save.");
 
@@ -214,6 +222,7 @@ class App {
       mode: this.workspaceEl.mode,
       annotations: [...this.currentAnnotations],
       therapistNotes: "",
+      soap: soap,
     };
 
     const updatedClient = { ...this.currentClient };
