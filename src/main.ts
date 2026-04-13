@@ -1,5 +1,6 @@
 import "./style.css";
 import { logicClient } from "./services/logic-client";
+import { generateUUID } from "./services/uuid";
 
 // Register components
 import "./components/app-auth/app-auth";
@@ -72,7 +73,7 @@ class App {
     window.addEventListener("save-client", (e: any) => {
       const newClient = {
         ...e.detail,
-        uuid: crypto.randomUUID(),
+        uuid: generateUUID(),
         createdAt: new Date().toISOString(),
         sessions: [],
       };
@@ -90,7 +91,7 @@ class App {
     window.addEventListener("confirm-annotation", (e: any) => {
       const ann = {
         ...e.detail,
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         mode: this.bodymapEl.mode,
       };
       this.currentAnnotations.push(ann);
@@ -214,7 +215,7 @@ class App {
       return alert("No annotations to save.");
 
     const session = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       date: new Date().toISOString(),
       mode: this.bodymapEl.mode,
       annotations: [...this.currentAnnotations],
