@@ -5,7 +5,7 @@
   color: var(--text3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  margin: 16px 0 10px;
+  margin: 24px 0 12px;
   padding-bottom: 6px;
   border-bottom: 1px solid var(--border);
 }
@@ -17,7 +17,7 @@
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 16px;
 }
 
 .form-group-full {
@@ -33,7 +33,7 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--text2);
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -69,14 +69,14 @@
 .contraindication-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
 }
 
 .contra-item {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 9px;
+  padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: 7px;
   cursor: pointer;
