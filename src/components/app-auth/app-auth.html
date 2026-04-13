@@ -22,7 +22,12 @@
     <form id="login-form">
       <div class="form-group">
         <label class="form-label">Therapist Name</label>
-        <input class="form-input" id="login-name" placeholder="Your name" />
+        <input
+          class="form-input"
+          id="login-name"
+          placeholder="Your name"
+          autocomplete="username"
+        />
       </div>
       <div class="form-group">
         <label class="form-label">Passphrase</label>
@@ -31,6 +36,7 @@
           id="login-pass"
           type="password"
           placeholder="Enter passphrase"
+          autocomplete="current-password"
         />
       </div>
       <button class="btn btn-primary btn-full" id="btn-login">Sign In</button>
@@ -38,7 +44,12 @@
     <form id="register-form" style="display: none">
       <div class="form-group">
         <label class="form-label">Your Name</label>
-        <input class="form-input" id="reg-name" placeholder="Full name" />
+        <input
+          class="form-input"
+          id="reg-name"
+          placeholder="Full name"
+          autocomplete="name"
+        />
       </div>
       <div class="form-group">
         <label class="form-label">Create Passphrase</label>
@@ -47,6 +58,7 @@
           id="reg-pass"
           type="password"
           placeholder="Min. 6 characters"
+          autocomplete="new-password"
         />
       </div>
       <div class="form-group">
@@ -56,6 +68,7 @@
           id="reg-pass2"
           type="password"
           placeholder="Repeat passphrase"
+          autocomplete="new-password"
         />
       </div>
       <button class="btn btn-primary btn-full" id="btn-register">
