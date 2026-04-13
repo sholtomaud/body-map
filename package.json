@@ -9,18 +9,20 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:agent": "vitest run --reporter=json --retry=0",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx,html,css}\""
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^8.58.1",
     "@typescript-eslint/parser": "^8.58.1",
     "@vitest/browser": "^4.1.4",
     "@vitest/browser-playwright": "^4.1.4",
-    "eslint": "^8.45.0",
+    "eslint": "^10.2.0",
     "playwright": "^1.59.1",
     "prettier": "^3.0.0",
     "typescript": "^5.0.2",
+    "typescript-eslint": "^8.58.1",
     "vite": "^8.0.8",
     "vitest": "^4.1.4"
   }

@@ -63,12 +63,6 @@ export class AppBodymap extends HTMLElement {
 
   private updateUI() {
     const shadow = this.shadowRoot!;
-    shadow
-      .getElementById("mode-pre")
-      ?.classList.toggle("active", this._mode === "pre");
-    shadow
-      .getElementById("mode-post")
-      ?.classList.toggle("active", this._mode === "post");
 
     ["front", "back"].forEach((side) => {
       const wrap = shadow.getElementById(side + "-wrap");
@@ -101,29 +95,6 @@ export class AppBodymap extends HTMLElement {
 
   private attachEvents() {
     const shadow = this.shadowRoot!;
-
-    shadow.getElementById("mode-pre")?.addEventListener("click", () => {
-      this._mode = "pre";
-      this.updateUI();
-    });
-
-    shadow.getElementById("mode-post")?.addEventListener("click", () => {
-      this._mode = "post";
-      this.updateUI();
-    });
-
-    shadow.getElementById("btn-save")?.addEventListener("click", () => {
-      this.dispatchEvent(
-        new CustomEvent("save-session", { bubbles: true, composed: true }),
-      );
-    });
-
-    shadow.getElementById("btn-clear")?.addEventListener("click", () => {
-      if (confirm("Clear all annotations?")) {
-        this._annotations = [];
-        this.updateUI();
-      }
-    });
 
     ["front", "back"].forEach((side) => {
       const wrap = shadow.getElementById(side + "-wrap");

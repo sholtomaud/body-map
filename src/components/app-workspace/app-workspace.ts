@@ -5,6 +5,7 @@ export class AppWorkspace extends HTMLElement {
   private _eventsAttached = false;
   private _client: any = null;
   private _activeTab = "bodymap";
+  private _mode: "pre" | "post" = "pre";
 
   constructor() {
     super();
@@ -25,6 +26,22 @@ export class AppWorkspace extends HTMLElement {
     this.updateUI();
   }
 
+  get mode() {
+    return this._mode;
+  }
+
+  set mode(value: "pre" | "post") {
+    this._mode = value;
+    this.updateUI();
+    this.dispatchEvent(
+      new CustomEvent("mode-changed", {
+        detail: { mode: value },
+        bubbles: true,
+        composed: true,
+      }),
+    );
+  }
+
   private render() {
     if (!this.shadowRoot!.innerHTML) {
       this.shadowRoot!.innerHTML = templateHtml;
@@ -37,20 +54,33 @@ export class AppWorkspace extends HTMLElement {
 
   private updateUI() {
     const shadow = this.shadowRoot!;
-    const header = shadow.getElementById("workspace-header");
+    const clientInfo = shadow.getElementById("header-client-info");
+    const message = shadow.getElementById("header-message");
     const empty = shadow.getElementById("empty-state");
+    const tabContent = shadow.getElementById("tab-content");
     const nameEl = shadow.getElementById("ws-client-name");
     const idEl = shadow.getElementById("ws-client-id");
 
     if (this._client) {
-      header!.style.display = "flex";
+      clientInfo!.style.display = "flex";
+      message!.style.display = "none";
       empty!.style.display = "none";
+      tabContent!.style.display = "contents";
       nameEl!.textContent = `${this._client.firstName} ${this._client.lastName}`;
       idEl!.textContent = `ID: ${this._client.uuid.substring(0, 8).toUpperCase()}`;
     } else {
-      header!.style.display = "none";
+      clientInfo!.style.display = "none";
+      message!.style.display = "block";
       empty!.style.display = "flex";
+      tabContent!.style.display = "none";
     }
+
+    shadow
+      .getElementById("mode-pre")
+      ?.classList.toggle("active", this._mode === "pre");
+    shadow
+      .getElementById("mode-post")
+      ?.classList.toggle("active", this._mode === "post");
 
     shadow.querySelectorAll(".session-tab").forEach((tab) => {
       tab.classList.toggle(
@@ -62,6 +92,30 @@ export class AppWorkspace extends HTMLElement {
 
   private attachEvents() {
     const shadow = this.shadowRoot!;
+
+    shadow.getElementById("mode-pre")?.addEventListener("click", () => {
+      this.mode = "pre";
+    });
+
+    shadow.getElementById("mode-post")?.addEventListener("click", () => {
+      this.mode = "post";
+    });
+
+    shadow.getElementById("btn-save")?.addEventListener("click", () => {
+      this.dispatchEvent(
+        new CustomEvent("save-session", { bubbles: true, composed: true }),
+      );
+    });
+
+    shadow.getElementById("btn-clear")?.addEventListener("click", () => {
+      this.dispatchEvent(
+        new CustomEvent("clear-annotations", {
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    });
+
     shadow.querySelectorAll(".session-tab").forEach((tab) => {
       tab.addEventListener("click", () => {
         const newTab = tab.getAttribute("data-tab")!;

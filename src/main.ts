@@ -67,6 +67,10 @@ class App {
       this.handleClientSelection(e.detail.id, this.clients);
     });
 
+    window.addEventListener("mode-changed", (e: any) => {
+      this.bodymapEl.mode = e.detail.mode;
+    });
+
     window.addEventListener("new-client", () => {
       this.clientModalEl.show();
     });
@@ -102,6 +106,13 @@ class App {
 
     window.addEventListener("save-session", () => {
       this.saveSession();
+    });
+
+    window.addEventListener("clear-annotations", () => {
+      if (confirm("Clear all annotations?")) {
+        this.currentAnnotations = [];
+        this.bodymapEl.annotations = [];
+      }
     });
 
     window.addEventListener("session-selected", (e: any) => {
@@ -200,7 +211,7 @@ class App {
     const session = {
       id: generateUUID(),
       date: new Date().toISOString(),
-      mode: this.bodymapEl.mode,
+      mode: this.workspaceEl.mode,
       annotations: [...this.currentAnnotations],
       therapistNotes: "",
     };
@@ -222,7 +233,7 @@ class App {
 
     this.currentAnnotations = [...session.annotations];
     this.bodymapEl.annotations = this.currentAnnotations;
-    this.bodymapEl.mode = session.mode;
+    this.workspaceEl.mode = session.mode;
     this.switchTab("bodymap");
     this.aiEl.addMessage(
       "assistant",
