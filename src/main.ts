@@ -28,6 +28,7 @@ class App {
 
   private currentClient: any = null;
   private currentAnnotations: any[] = [];
+  private clients: any[] = [];
 
   constructor() {
     this.init();
@@ -63,7 +64,7 @@ class App {
     });
 
     window.addEventListener("client-selected", (e: any) => {
-      this.selectClient(e.detail.id);
+      this.handleClientSelection(e.detail.id, this.clients);
     });
 
     window.addEventListener("new-client", () => {
@@ -113,6 +114,7 @@ class App {
 
     logicClient.subscribe((msg) => {
       if (msg.type === "CLIENTS_UPDATED") {
+        this.clients = msg.payload;
         this.sidebarEl.clients = msg.payload;
         localStorage.setItem(
           `clients_${localStorage.getItem("currentTherapist")}`,
@@ -156,25 +158,6 @@ class App {
     localStorage.removeItem("currentTherapist");
   }
 
-  selectClient(id: string) {
-    logicClient.subscribe((msg) => {
-      if (msg.type === "CLIENTS_UPDATED") {
-        this.currentClient = msg.payload.find((c: any) => c.uuid === id);
-        this.sidebarEl.selectedClientId = id;
-        this.workspaceEl.client = this.currentClient;
-        this.currentAnnotations = [];
-        this.bodymapEl.annotations = [];
-        this.aiEl.messages = [];
-        this.aiEl.addMessage(
-          "assistant",
-          `Client profile loaded. Click on any body region to annotate findings.`,
-        );
-        this.switchTab("bodymap");
-      }
-    });
-    // Need to make sure we only do this once or handle properly.
-    // For simplicity in this refactor, I'll just find it from current clients.
-  }
 
   // Re-implemented selectClient to avoid multiple subscriptions
   handleClientSelection(id: string, clients: any[]) {
