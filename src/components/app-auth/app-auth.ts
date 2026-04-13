@@ -39,8 +39,6 @@ export class AppAuth extends HTMLElement {
     const tabRegister = shadow.getElementById("tab-register");
     const loginForm = shadow.getElementById("login-form");
     const registerForm = shadow.getElementById("register-form");
-    const btnLogin = shadow.getElementById("btn-login");
-    const btnRegister = shadow.getElementById("btn-register");
     const errorEl = shadow.getElementById("auth-error") as HTMLElement;
 
     tabLogin?.addEventListener("click", () => {
@@ -59,7 +57,8 @@ export class AppAuth extends HTMLElement {
       errorEl.style.display = "none";
     });
 
-    btnLogin?.addEventListener("click", () => {
+    loginForm?.addEventListener("submit", (e) => {
+      e.preventDefault();
       const name = (
         shadow.getElementById("login-name") as HTMLInputElement
       ).value.trim();
@@ -70,7 +69,8 @@ export class AppAuth extends HTMLElement {
       logicClient.postMessage("LOGIN", { name, hash: this.hashPass(pass) });
     });
 
-    btnRegister?.addEventListener("click", () => {
+    registerForm?.addEventListener("submit", (e) => {
+      e.preventDefault();
       const name = (
         shadow.getElementById("reg-name") as HTMLInputElement
       ).value.trim();
